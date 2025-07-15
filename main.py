@@ -1,17 +1,18 @@
+import asyncio
 from telegram_bot import app
 from discord_listener import run_discord
-import asyncio
+
+async def run_telegram():
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
+    # Jangan stop polling (biarkan terus berjalan)
+    # await app.updater.idle()
 
 async def main():
-    # Jalankan Discord listener di task terpisah
+    telegram_task = asyncio.create_task(run_telegram())
     discord_task = asyncio.create_task(run_discord())
-
-    # Jalankan Telegram polling di thread terpisah agar tidak bentrok event loop
-    from threading import Thread
-    Thread(target=app.run_polling, daemon=True).start()
-
-    # Tunggu task Discord berjalan terus-menerus
-    await discord_task
+    await asyncio.gather(telegram_task, discord_task)
 
 if __name__ == "__main__":
     asyncio.run(main())
