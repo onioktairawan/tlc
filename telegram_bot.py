@@ -1,20 +1,22 @@
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CallbackContext, MessageHandler, filters, CallbackQueryHandler, CommandHandler
 import os
-from telegram.ext import Application, MessageHandler, filters, CallbackQueryHandler
-from telegram import Update
-from telegram.ext import ContextTypes
 from dotenv import load_dotenv
-from bridge import send_to_discord
+from handlers import handle_telegram_reply
 
 load_dotenv()
+
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-tg_bot = Application.builder().token(TELEGRAM_TOKEN).build()
+app = Application.builder().token(TELEGRAM_TOKEN).build()
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.id == int(TELEGRAM_CHAT_ID):
-        await send_to_discord(update.message)
+@app.message_handler(filters.TEXT & (~filters.COMMAND))
+async def handle_reply(update: Update, context: CallbackContext):
+    if "discord_reply_to" in context.user_data:
+        from discord_listener import send_to_discord  # import di dalam fungsi untuk hindari circular import
+        reply_to_id = context.user_data.pop("discord_reply_to")
+        await send_to_discord(reply_to_id, update.message.text)
+        await update.message.reply_text("Pesan sudah dikirim ke Discord.")
 
-def run_telegram():
-    tg_bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
-    return tg_bot.run_polling()
+app.add_handler(CallbackQueryHandler(handle_telegram_reply))
