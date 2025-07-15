@@ -10,10 +10,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
-intents = discord.Intents.default()
-intents.message_content = True
-
-client = commands.Bot(command_prefix="!", self_bot=True, intents=intents)
+# Tidak menggunakan Intents karena discord.py-self tidak menyediakannya
+client = commands.Bot(command_prefix="!", self_bot=True)
 
 @client.event
 async def on_ready():
