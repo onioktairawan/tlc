@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
 # Tidak menggunakan Intents karena discord.py-self tidak menyediakannya
-client = commands.Bot(command_prefix="!", self_bot=True)
+client = commands.Bot(command_prefix="!", self_bot=True, intents=None)
 
 @client.event
 async def on_ready():
