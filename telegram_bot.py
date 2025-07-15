@@ -12,7 +12,7 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 logging.basicConfig(level=logging.DEBUG)
 
-pending_replies = {}  # Simpan state reply sementara
+pending_replies = {}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Bot aktif.")
@@ -35,9 +35,12 @@ async def handle_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await reply_to_discord(telegram_msg_id, reply_text)
         await update.message.reply_text("Sudah dibalas ke Discord.")
 
-def run_telegram():
+async def run_telegram():
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(handle_callback))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_reply))
-    app.run_polling()
+
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
