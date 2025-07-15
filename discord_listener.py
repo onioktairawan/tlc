@@ -1,4 +1,3 @@
-# discord_listener.py
 import os
 import discord
 from dotenv import load_dotenv
@@ -8,20 +7,17 @@ from bridge import send_to_telegram
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
-intents = discord.Intents.default()
-intents.messages = True
-intents.message_content = True
-
-client = discord.Client(intents=intents)
+# Untuk userbot (discord.py-self), tidak ada intents
+client = discord.Client(self_bot=True)
 
 @client.event
 async def on_ready():
-    print(f"Logged in as {client.user}")
+    print(f"[Discord] Logged in as {client.user} ({client.user.id})")
 
 @client.event
 async def on_message(message):
-    if message.author.bot:
-        return
+    if message.author.id == client.user.id:
+        return  # Abaikan pesan dari diri sendiri
 
     discord_messages[message.id] = message  # Simpan pesan
     await send_to_telegram(message.id, message.author.name, message.content)
