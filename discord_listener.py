@@ -10,7 +10,10 @@ logging.basicConfig(level=logging.DEBUG)
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
-client = commands.Bot(command_prefix="!", self_bot=True)
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = commands.Bot(command_prefix="!", self_bot=True, intents=intents)
 
 @client.event
 async def on_ready():
@@ -23,5 +26,5 @@ async def on_message(message):
     logging.debug(f"[DISCORD] Pesan diterima dari {message.author.name}: {message.content}")
     await send_to_telegram(message)
 
-def run_discord():
-    client.run(DISCORD_TOKEN)
+async def run_discord():
+    await client.start(DISCORD_TOKEN)
