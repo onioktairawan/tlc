@@ -1,9 +1,12 @@
+import asyncio
 from discord_listener import run_discord
 from telegram_bot import run_telegram
-import threading
+
+async def main():
+    # Jalankan dua bot secara bersamaan
+    telegram_task = asyncio.create_task(run_telegram())
+    discord_task = asyncio.create_task(run_discord())
+    await asyncio.gather(telegram_task, discord_task)
 
 if __name__ == "__main__":
-    t1 = threading.Thread(target=run_discord)
-    t2 = threading.Thread(target=run_telegram)
-    t1.start()
-    t2.start()
+    asyncio.run(main())
