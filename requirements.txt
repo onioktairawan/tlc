@@ -1,0 +1,4 @@
+git+https://github.com/dolfies/discord.py-self.git
+python-telegram-bot
+pymongo
+python-dotenv
