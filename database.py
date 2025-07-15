@@ -1,15 +1,15 @@
 from pymongo import MongoClient
-from os import getenv
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
-client = MongoClient(getenv("MONGO_URI"))
-db = client['bridge_db']
-collection = db['message_links']
+client = MongoClient(os.getenv("MONGO_URI"))
+db = client["bridge_bot"]
+messages = db["messages"]
 
-def save_message(discord_id, telegram_msg_id):
-    collection.insert_one({"discord_id": discord_id, "telegram_msg_id": telegram_msg_id})
+async def save_message(discord_id, telegram_id):
+    messages.insert_one({"discord_id": discord_id, "telegram_id": telegram_id})
 
-def get_discord_id(telegram_msg_id):
-    doc = collection.find_one({"telegram_msg_id": telegram_msg_id})
-    return doc['discord_id'] if doc else None
+async def get_discord_id(telegram_reply_to_id):
+    doc = messages.find_one({"telegram_id": telegram_reply_to_id})
+    return doc["discord_id"] if doc else None
