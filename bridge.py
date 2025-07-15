@@ -1,4 +1,4 @@
-from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram_bot import app, TELEGRAM_CHAT_ID
 
 async def send_to_telegram(message_id, author_name, content):
